@@ -1,0 +1,3 @@
+tk
+selenium
+webdriver_manager
