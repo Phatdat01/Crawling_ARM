@@ -6,4 +6,5 @@ dist
 *.spec
 *.json
 *.exe
+credentials.json
 a.txt
