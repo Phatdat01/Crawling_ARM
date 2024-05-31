@@ -15,7 +15,7 @@ def app():
     if os.path.exists("Images/icon.ico"):
         win.iconbitmap("Images/icon.ico")
 
-    process_theme(
+    user_name, password,delay, page, ward, web, path, re_from, re_to, result_from, result_to = process_theme(
         win=win,
         web_list=WEB_LIST,
         ward_list = WARD_LIST,      
