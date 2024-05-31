@@ -37,15 +37,15 @@ def process_theme(win: tk.Tk,
     # Delay - Ward - Page
     ttk.Label(win, text = "Delay",
         font = ("Times New Roman", 14, "bold")).grid(column = 1, 
-        row = 4, pady = 10)
+        row = 4)
     
     ttk.Label(win, text = "Trang",
         font = ("Times New Roman", 14, "bold")).grid(column = 2, 
-        row = 4, pady = 10)
+        row = 4)
     
     ttk.Label(win, text = "Xã",
         font = ("Times New Roman", 14, "bold")).grid(column = 3, 
-        row = 4, pady = 10, columnspan=2)
+        row = 4, columnspan=2)
     
     delay = ttk.Entry(win, font=("Times New Roman", 15), width=6)
     delay.grid(
@@ -54,7 +54,7 @@ def process_theme(win: tk.Tk,
 
     page = ttk.Combobox(win, width = 4, font=25, justify= "center", textvariable = tk.Listbox())
     page['values'] = list(range(1,4001))
-    page.grid(column = 2, row = 5, pady=10)
+    page.grid(column = 2, row = 5)
     page.current(0)
 
     ward = ttk.Combobox(win, width = 17, font=("Times New Roman", 15), justify= "center", textvariable = tk.Listbox(), state= "readonly")
@@ -66,11 +66,11 @@ def process_theme(win: tk.Tk,
     # Tool - path
     ttk.Label(win, text = "Web:",
         font = ("Times New Roman", 14, "bold")).grid(column = 1, 
-        row = 6, pady = 10, sticky="e")
-    web = ttk.Entry(win, font=("Times New Roman", 15), width=5)
-    web.grid(
-        column = 2, row = 6, sticky="w", padx=(10,0)
-    )
+        row = 6, sticky="e")
+    web = ttk.Combobox(win, width = 5, font=("Times New Roman", 15), justify= "center", textvariable = tk.Listbox(), state= "readonly")
+    web['values'] = web_list
+    web.grid(column = 2, row = 6, padx=(10,0))
+    web.current(0)
 
     ttk.Label(win, text = "Save:",
         font = ("Times New Roman", 14, "bold")).grid(column = 3, 
