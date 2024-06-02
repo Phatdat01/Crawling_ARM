@@ -1,8 +1,6 @@
 from tkinter import ttk
 from tkinter import messagebox
 
-from datetime import datetime
-
 from Crawl.crawl import crawl
 
 def run(
@@ -23,13 +21,13 @@ def run(
         "ward": ward,
         "delay": delay,
         "page": page,
-        "refrom": datetime.strptime(re_from, "%d/%m/%Y"),
-        "re_to": datetime.strptime(re_to, "%d/%m/%Y"),
-        "result_from": datetime.strptime(result_from, "%d/%m/%Y"),
-        "result_to": datetime.strptime(result_to, "%d/%m/%Y")
+        "re_from": re_from,
+        "re_to": re_to,
+        "result_from": result_from,
+        "result_to": result_to
     }
     if cre["name"]== "" or cre["pw"] == "":
-        messagebox.showerror("showerror", "User Name or Password?")
+        messagebox.showerror("Error!", "User Name or Password?")
     else:
         try:
             crawl(
@@ -37,4 +35,4 @@ def run(
             )
             messagebox.showinfo("Notice!", "Done!!!")
         except:
-            messagebox.showerror("showerror", "Có lỗi Xảy Ra với máy chủ web, Vui Lòng Mở Lại!")
+            messagebox.showerror("Error!", "Có lỗi Xảy Ra với máy chủ web, Vui Lòng Mở Lại!")

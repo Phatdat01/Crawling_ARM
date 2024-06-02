@@ -13,8 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.edge.service import Service as EdgeService
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
-# from Crawl.storing import change_id, get_by_latest_file, move_to_des
-
+CONTENT_LIST = ["cn","chuyển nhượng"]
 
 def load_edge(download_path: str):
     prefs = {
@@ -155,8 +154,57 @@ def access(driver: WebDriver, cre: json):
     arm = wait_element(driver=driver, timeout= 30, key="h-f.ng-binding.ng-scope",by="class")
     arm = driver.find_elements(By.CLASS_NAME, value="h-f.ng-binding.ng-scope")[1]
     arm.click()
+    del arm
 
     # Wanna search
     search_option = wait_element(driver=driver, timeout= 30, key="8543",by="id")
     search_option.click()
-        
+
+    search_button = wait_element(driver=driver, timeout= 30, key="submit.ui.button.green.text-white.m-r-7",by="class")
+    search_button.click()
+    del search_button
+
+    time.sleep(1.7)
+    re_from = wait_element(driver=driver, timeout= 30, key="NgayNhanTu",by="name")
+    re_from.clear()
+    time.sleep(0.7)
+    re_from.send_keys(cre['re_from'])
+    del re_from
+
+    re_to = wait_element(driver=driver, timeout= 30, key="NgayNhanDen",by="name")
+    re_to.clear()
+    time.sleep(0.7)
+    re_to.send_keys(cre['re_to'])
+    del re_to
+
+    result_from = wait_element(driver=driver, timeout= 30, key="NgayHenTraTu",by="name")
+    result_from.clear()
+    time.sleep(0.7)
+    result_from.send_keys(cre['result_from'])
+    del result_from
+
+    result_to = wait_element(driver=driver, timeout= 30, key="NgayHenTraDen",by="name")
+    result_to.clear()
+    time.sleep(0.7)
+    result_to.send_keys(cre['result_to'])
+    del result_to
+
+    search = wait_element(driver=driver, timeout= 30, key="tkDiaChiXaThuaDat",by="id")
+    ward = search.find_element(By.CLASS_NAME, value="search")
+    ward.clear()
+    time.sleep(0.7)
+    ward.send_keys(cre['ward'])
+
+    search = wait_element(driver=driver, timeout= 30, key="btnTimKiem",by="id")
+    search.click()
+
+def download(driver: WebDriver, cre: json):
+    time.sleep(1.7)
+    data = wait_element(driver=driver, timeout= 30, key="danhSachHoSo",by="id")
+    row = data.find_elements(By.TAG_NAME, value="tr")
+
+    for i in range(1,len(row)):
+        txt = row[i].find_elements(By.CLASS_NAME, value= "ng-binding")[5].text
+        for content in CONTENT_LIST:
+            if content in txt.lower():
+                print("Accept")

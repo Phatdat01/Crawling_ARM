@@ -3,7 +3,7 @@ import json
 import time
 from pathlib import Path
 
-from Crawl.crawling import open_web, login, access
+from Crawl.crawling import open_web, login, access, download
 
 DOWNLOAD_PATH = str(Path.home() / "Downloads")
 
@@ -15,6 +15,7 @@ def crawl(cre: json):
     driver.maximize_window()
     login(driver=driver,cre=cre)
     access(driver=driver, cre=cre)
+    download(driver=driver, cre=cre)
 
     time.sleep(5)
     driver.quit()
