@@ -77,7 +77,7 @@ def login(driver: WebDriver, cre: json):
     name.send_keys(cre["name"])
     pw= driver.find_element(By.NAME, "password")
     pw.send_keys(cre["pw"])
-    login = wait_element(driver=driver, timeout=10,key="login100-form-btn",by="class")
+    login = wait_element(driver=driver, timeout=10,key="ui.fluid.large.submit.button",by="class")
     login.click()
 
 
@@ -149,4 +149,14 @@ def open_file(args, driver: WebDriver):
         driver.switch_to.window(driver.window_handles[0])
     except Exception as e:
         print(f"Error in process_file: {e}")
+
+def access(driver: WebDriver, cre: json):
+    # access to navigation
+    arm = wait_element(driver=driver, timeout= 30, key="h-f.ng-binding.ng-scope",by="class")
+    arm = driver.find_elements(By.CLASS_NAME, value="h-f.ng-binding.ng-scope")[1]
+    arm.click()
+
+    # Wanna search
+    search_option = wait_element(driver=driver, timeout= 30, key="8543",by="id")
+    search_option.click()
         
