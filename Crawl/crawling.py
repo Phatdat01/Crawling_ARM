@@ -14,6 +14,7 @@ from selenium.webdriver.edge.service import Service as EdgeService
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 CONTENT_LIST = ["cn","chuyển nhượng"]
+FILE_LIST = ["Giấy chứng nhận","Tờ khai lệ phí trước bạ nhà, đất"]
 
 def load_edge(download_path: str):
     prefs = {
@@ -52,6 +53,8 @@ def wait_element(driver: WebDriver, timeout: int, key: str, by: str) -> WebEleme
         condition = EC.element_to_be_clickable((By.TAG_NAME, key))
     elif by.lower() == "css":
         condition = EC.element_to_be_clickable((By.CSS_SELECTOR, key))
+    elif by.lower() == "xpath":
+        condition = EC.element_to_be_clickable((By.XPATH, key))
     else:
         return []
 
@@ -80,40 +83,46 @@ def login(driver: WebDriver, cre: json):
     login.click()
 
 
-def load_pages(driver: WebDriver, cre: json) -> int:
-    num = 0
-    while True:
-        try:
-            time.sleep(6.7)
-            pages = wait_element(driver=driver,timeout=30,key="total",by="name")
-            ward_selection = driver.find_elements(By.NAME,value="xaId")
-            for ward in ward_selection:
-                try:
-                    need_select = Select(ward)
-                    need_select.select_by_visible_text(cre["ward"])
-                except:
-                    pass
-            time.sleep(3)
-            pages = driver.find_element(By.NAME, value="total").text
-            return int(pages)
-        except:
-            num+=1
-            if num>5:
-                return int(pages)
+def check_current_page(driver: WebDriver) -> List[int]:
+    """
+    Check current page
+    
+    Args:
+        driver: WebDriver
+            Driver selenium
+    
+    Returns:
+        end_range: end of range in page
+        last: last row of page
+    """
+    current = driver.find_element(By.XPATH, value="//*[@ng-if='totalPage > 0']")
+    current_range, last= current.find_elements(By.CLASS_NAME, value="ng-binding")
+    _, end_range = map(int, current_range.text.split(" - "))
+    return [end_range, int(last.text)]
 
 
-def change_to_current_page(driver: WebDriver, page: str):
-    time.sleep(1.7)
-    current = wait_element(driver=driver, timeout=20,key="current",by="name")
-    current.click()
-    time.sleep(2)
-    current.clear()
-    time.sleep(2)
-    current.send_keys(page)
-    time.sleep(2)
-    current.send_keys(Keys.ENTER)
-    time.sleep(2.3)
+def change_to_current_page(driver: WebDriver, page: int, limit_top: int):
+    time.sleep(0.7)
+    # show top x each page
+    top = wait_element(driver=driver, timeout=30, key="ui.selection.floating.dropdown.w-auto", by="class")
+    top.click()
+    time.sleep(0.7)
+    top_x = top.find_element(By.XPATH, value=f"//*[@data-value='{limit_top}']")
+    top_x.click()
 
+    time.sleep(0.7)
+    # Change to current
+    end_range, last = check_current_page(driver=driver)
+
+    while page > 1:
+        time.sleep(1.3)
+        if end_range >= last:
+            break
+        page -= 1
+        next = driver.find_element(By.XPATH, value="//*[@title='Trang sau']")
+        next.click()
+        end_range += limit_top
+        
 
 def close_file(driver: WebDriver, id: int = -1):
     try:
@@ -124,11 +133,10 @@ def close_file(driver: WebDriver, id: int = -1):
         print(f"Error in process_file: {e}")
 
 
-def download_file(args: List[Tuple[int, WebElement]], driver: WebDriver):
-    handle_index, file = args
+def download_file(driver: WebDriver, id: int):
     try:
         try:
-            driver.switch_to.window(driver.window_handles[handle_index])
+            driver.switch_to.window(driver.window_handles[id])
         except:
             driver.switch_to.window(driver.window_handles[1])
         save = wait_element(driver=driver,timeout=20,key="body",by="tag")
@@ -137,17 +145,6 @@ def download_file(args: List[Tuple[int, WebElement]], driver: WebDriver):
     except Exception as e:
         print(f"Error in process_file: {e}")
 
-
-def open_file(args, driver: WebDriver):
-    handle_index, file = args
-    try:
-        link = file.get_attribute("nodeid")
-        driver.execute_script("window.open('');")
-        driver.switch_to.window(driver.window_handles[handle_index])
-        driver.get(f"https://khh.mplis.gov.vn/dc/PdfViewer?fileId={link}")
-        driver.switch_to.window(driver.window_handles[0])
-    except Exception as e:
-        print(f"Error in process_file: {e}")
 
 def access(driver: WebDriver, cre: json):
     # access to navigation
@@ -198,13 +195,81 @@ def access(driver: WebDriver, cre: json):
     search = wait_element(driver=driver, timeout= 30, key="btnTimKiem",by="id")
     search.click()
 
+
+def click_to_save(driver: WebDriver, cre: json):
+    time.sleep(1.7)
+    info = wait_element(driver=driver, timeout=30, key="item.XTT", by="class")
+    info.click()
+    time.sleep(1.7)
+    container_element = driver.find_elements(By.XPATH, value="//*[@ng-repeat='item in $p.objThanhPhanHoSoKemTheos']")
+    file = 0
+
+    # click to needed download
+    for container in container_element:
+        text = container.find_element(By.CLASS_NAME, value="text-wrap.ng-binding").text
+        for file_name in FILE_LIST:
+            if file_name in text:
+                container.find_element(By.TAG_NAME, value="a").click()
+                driver.switch_to.window(driver.window_handles[0])
+                time.sleep(1)
+
+    time.sleep(cre['delay'])
+
+    for i in range(1,3):
+        download_file(driver=driver, id=i)
+        file += 1
+    time.sleep(1.7)
+    for i in range(2):
+        close_file(driver=driver)
+
+    time.sleep(1)
+    # remove not need windows tag
+    if  len(driver.window_handles) >1:
+        for window_handle in range (1, len(driver.window_handles)):
+            close_file(driver=driver, id=window_handle)
+
+    processing = wait_element(driver=driver, timeout=30, key="//*[@ng-click='$p.quaTrinhXuLyInit()']", by="xpath")
+    processing.click()
+
+    rows = wait_element(driver=driver, timeout=30, key="//*[@ng-repeat-start='item in $data.items']", by="xpath")
+    rows = driver.find_elements(By.XPATH, value="//*[@ng-repeat-start='item in $data.items']")
+
+    for row in rows:
+        text = row.find_elements(By.TAG_NAME, value="td")[2].text
+        if "Bến Lức" in text:
+            files = row.find_elements(By.CLASS_NAME, value="m-n.pointer.large.red.file.outline.pdf.icon")
+            files[0].click()
+            for fi in files:
+                fi.click()
+                driver.switch_to.window(driver.window_handles[0])
+                time.sleep(1)
+
+            for i in range(1,len(files)+1):
+                download_file(driver=driver, id=i)
+                file += 1
+            time.sleep(1.7)
+            for i in range(len(files)):
+                close_file(driver=driver)
+
+    if  len(driver.window_handles) >1:
+        for window_handle in range (1, len(driver.window_handles)):
+            close_file(driver=driver, id=window_handle)
+
+    print(file)
+
 def download(driver: WebDriver, cre: json):
     time.sleep(1.7)
     data = wait_element(driver=driver, timeout= 30, key="danhSachHoSo",by="id")
     row = data.find_elements(By.TAG_NAME, value="tr")
 
+    ok=""
     for i in range(1,len(row)):
         txt = row[i].find_elements(By.CLASS_NAME, value= "ng-binding")[5].text
+        if ok=="done":
+            break
         for content in CONTENT_LIST:
             if content in txt.lower():
-                print("Accept")
+                row[i].click()
+                click_to_save(driver=driver, cre=cre)
+                ok="done"
+                break
