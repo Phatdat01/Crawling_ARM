@@ -2,25 +2,30 @@ import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
-from tkcalendar import DateEntry
-from datetime import datetime, timedelta
-from typing import Tuple, List
+# from tkcalendar import DateEntry
+from datetime import datetime
+from typing import List
 
 def close_application(win: tk.Tk):
     win.destroy()
 
-def set_date_textbox(win: tk.Tk, value: datetime) -> DateEntry:
-    text_box = DateEntry(
-        win, 
-        selectmode='day',
-        date_pattern="dd/mm/yyyy", 
-        year=value.year,
-        month=value.month,
-        day=value.day,
-        font = ("Times New Roman", 12, "bold"),
-        justify= "center"
+def set_date_textbox(win: tk.Tk, value: datetime):
+    
+    # Because at this time pyinstaller cant find tkintercalendar hook, remove this
+    # text_box = DateEntry(
+    #     win, 
+    #     selectmode='day',
+    #     date_pattern="dd/mm/yyyy", 
+    #     year=value.year,
+    #     month=value.month,
+    #     day=value.day,
+    #     font = ("Times New Roman", 12, "bold"),
+    #     justify= "center"
 
-    )
+    # )
+
+    text_box = ttk.Entry(win, font = ("Times New Roman", 12, "bold"), justify= "center")
+    select_save_path(item=text_box, value=value.strftime("%d/%m/%Y"))
     return text_box
 
 def select_save_path(item: ttk.Entry, value: str = None):
@@ -31,6 +36,24 @@ def select_save_path(item: ttk.Entry, value: str = None):
         save_path = save_path.replace("/", "\\")
     item.delete(0, tk.END)
     item.insert(tk.END, save_path)
+
+def load_credential() -> List[str]:
+    list_txt = []
+    for file in os.listdir("."):
+        if file.endswith(".txt") and os.path.isfile(os.path.join(".", file)):
+            list_txt.append(file)
+    if "requirements.txt" in list_txt:
+        list_txt.remove("requirements.txt")
+    for file_path in list_txt:
+        with open(file_path, 'r', encoding="utf-8") as file:
+            lines = file.readlines()
+            lines = [line.strip() for line in lines if line.strip()]
+            lines = [line.replace('\n', '') for line in lines]
+            if len(lines)>1 and (len(lines)<4):
+                name_text, pw_text = lines[:2]
+                url_text = lines[2] if len(lines) > 2 else ""
+                return name_text, pw_text, url_text
+    return "","",""
 
 def process_theme(win: tk.Tk,
                   web_list: List[str],
@@ -154,5 +177,5 @@ def process_theme(win: tk.Tk,
         column = 3, columnspan=2, row = 11, padx=(10,0), pady=(0,10)
     )
     
-    return user_name, password,delay, page, ward, web, path, re_from, re_to, result_from, result_to
+    return user_name, password,delay, page, ward, web, path, run_action, re_from, re_to, result_from, result_to
 
