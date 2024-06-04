@@ -256,7 +256,7 @@ def click_to_save(driver: WebDriver, cre: json, page: int, id: int):
     # download get result
     for row in rows:
         text = row.find_elements(By.TAG_NAME, value="td")[2].text
-        if "Bến Lức" in text:
+        if "Cần Giuộc" in text:
             try:
                 files = row.find_elements(By.CLASS_NAME, value="m-n.pointer.large.red.file.outline.pdf.icon")
                 if files:

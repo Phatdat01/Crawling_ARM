@@ -6,13 +6,13 @@ from GUI.theme import process_theme, close_application, load_credential, select_
 
 URL_PATH = "https://hcc-benluc.ictlongan.vn"
 WEB_LIST = ["chrome","edge"]
-WARD_LIST = ["Thị trấn Bến Lức","xã An Thạnh","xã Bình Đức","xã Long Hiệp","xã Lương Bình", 
-            "xã Lương Hòa", "xã Mỹ Yên","xã Nhựt Chánh","xã Phước Lợi","xã Tân Bửu",
-            "xã Tân Hòa","xã Thạnh Đức","xã Thạnh Hòa","xã Thạnh Lợi","xã Thanh Phú"]
+WARD_LIST = ["Thị trấn Cần Giuộc","xã Đông Thạnh","xã Long An","xã Long Hậu","xã Long Phụng","xã Long Thượng",
+             "xã Mỹ Lộc","xã Phước Hậu","xã Phước Lại","xã Phước Lâm","xã Phước Lý","xã Phước Vĩnh Đông",
+             "xã Phước Vĩnh Tây","xã Tân Kim","xã Tân Tập","xã Thuận Thành","xã Trường Bình"]
 
 def app():
     win = tk.Tk()
-    win.title("Thuỷ thủ Bến Lức")
+    win.title("Thuỷ thủ Cần Giuộc")
     win.resizable(width=False, height=False)
     if os.path.exists("Images/icon.ico"):
         win.iconbitmap("Images/icon.ico")
