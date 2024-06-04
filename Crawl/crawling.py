@@ -168,7 +168,8 @@ def access(driver: WebDriver, cre: json):
     del arm
 
     # Wanna search
-    search_option = wait_element(driver=driver, timeout= 30, key="8543",by="id")
+    # search_option = wait_element(driver=driver, timeout= 5, key="8543",by="id")
+    search_option = wait_element(driver=driver, timeout= 5, key="8616",by="id")
     search_option.click()
 
     search_button = wait_element(driver=driver, timeout= 30, key="submit.ui.button.green.text-white.m-r-7",by="class")
@@ -303,33 +304,34 @@ def download(driver: WebDriver, cre: json):
         end_range, last = check_current_page(driver=driver)
         data = wait_element(driver=driver, timeout= 30, key="danhSachHoSo",by="id")
         row = data.find_elements(By.TAG_NAME, value="tr")
-
-        # check each row of page
-        for i in range(4,len(row)):
-            txt = row[i].find_elements(By.CLASS_NAME, value= "ng-binding")[5].text
-            for content in CONTENT_LIST:
-                if content in txt.lower():
-                    time.sleep(1)
-                    row[i].click()
-                    click_to_save(driver=driver, cre=cre, page=page, id=i)
-                    driver.switch_to.window(driver.window_handles[0])
-                    time.sleep(2.3)
-                    no_to=0
-                    while True:
-                        try:
-                            time.sleep(3.3)
-                            close = wait_element(driver=driver, timeout=2, key=".close.icon[style=';']", by="css")
-                            close.click()
-                            break
-                        except:
-                            if no_to>10:
-                                no_to += 1
+        
+        if len(row)>1:
+            # check each row of page
+            for i in range(4,len(row)):
+                txt = row[i].find_elements(By.CLASS_NAME, value= "ng-binding")[5].text
+                for content in CONTENT_LIST:
+                    if content in txt.lower():
+                        time.sleep(1)
+                        row[i].click()
+                        click_to_save(driver=driver, cre=cre, page=page, id=i)
+                        driver.switch_to.window(driver.window_handles[0])
+                        time.sleep(2.3)
+                        no_to=0
+                        while True:
+                            try:
+                                time.sleep(3.3)
+                                close = wait_element(driver=driver, timeout=2, key=".close.icon[style=';']", by="css")
+                                close.click()
                                 break
-                            else:
-                                pass
+                            except:
+                                if no_to>10:
+                                    no_to += 1
+                                    break
+                                else:
+                                    pass
 
-        if end_range >= last:
-            break
-        else:
-            page += 1
-            change_page(driver=driver)
+            if end_range >= last:
+                break
+            else:
+                page += 1
+                change_page(driver=driver)

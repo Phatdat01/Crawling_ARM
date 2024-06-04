@@ -4,7 +4,7 @@ import tkinter as tk
 from GUI.load import run
 from GUI.theme import process_theme, close_application, load_credential, select_save_path
 
-URL_PATH = "https://hcc-benluc.ictlongan.vn"
+URL_PATH = "https://hcc-cangiuoc.ictlongan.vn/ho-so-hanh-chinh/tim-kiem"
 WEB_LIST = ["chrome","edge"]
 WARD_LIST = ["Thị trấn Cần Giuộc","xã Đông Thạnh","xã Long An","xã Long Hậu","xã Long Phụng","xã Long Thượng",
              "xã Mỹ Lộc","xã Phước Hậu","xã Phước Lại","xã Phước Lâm","xã Phước Lý","xã Phước Vĩnh Đông",
