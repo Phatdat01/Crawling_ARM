@@ -297,10 +297,10 @@ def click_to_save(driver: WebDriver, cre: json, page: int, id: int):
 
 def download(driver: WebDriver, cre: json):
     time.sleep(3.7)
-    end_range, last = check_current_page(driver=driver)
     page = cre["page"]
     while True:
         time.sleep(1.7)
+        end_range, last = check_current_page(driver=driver)
         data = wait_element(driver=driver, timeout= 30, key="danhSachHoSo",by="id")
         row = data.find_elements(By.TAG_NAME, value="tr")
 
@@ -309,12 +309,24 @@ def download(driver: WebDriver, cre: json):
             txt = row[i].find_elements(By.CLASS_NAME, value= "ng-binding")[5].text
             for content in CONTENT_LIST:
                 if content in txt.lower():
+                    time.sleep(1)
                     row[i].click()
                     click_to_save(driver=driver, cre=cre, page=page, id=i)
                     driver.switch_to.window(driver.window_handles[0])
                     time.sleep(2.3)
-                    close = driver.find_element(By.CSS_SELECTOR, value='.close.icon[style=";"]')
-                    close.click()
+                    no_to=0
+                    while True:
+                        try:
+                            time.sleep(3.3)
+                            close = wait_element(driver=driver, timeout=2, key=".close.icon[style=';']", by="css")
+                            close.click()
+                            break
+                        except:
+                            if no_to>10:
+                                no_to += 1
+                                break
+                            else:
+                                pass
 
         if end_range >= last:
             break

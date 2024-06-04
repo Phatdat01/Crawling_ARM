@@ -2,25 +2,30 @@ import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
-from tkcalendar import DateEntry
-from datetime import datetime, timedelta
-from typing import Tuple, List
+# from tkcalendar import DateEntry
+from datetime import datetime
+from typing import List
 
 def close_application(win: tk.Tk):
     win.destroy()
 
-def set_date_textbox(win: tk.Tk, value: datetime) -> DateEntry:
-    text_box = DateEntry(
-        win, 
-        selectmode='day',
-        date_pattern="dd/mm/yyyy", 
-        year=value.year,
-        month=value.month,
-        day=value.day,
-        font = ("Times New Roman", 12, "bold"),
-        justify= "center"
+def set_date_textbox(win: tk.Tk, value: datetime):
+    
+    # Because at this time pyinstaller cant find tkintercalendar hook, remove this
+    # text_box = DateEntry(
+    #     win, 
+    #     selectmode='day',
+    #     date_pattern="dd/mm/yyyy", 
+    #     year=value.year,
+    #     month=value.month,
+    #     day=value.day,
+    #     font = ("Times New Roman", 12, "bold"),
+    #     justify= "center"
 
-    )
+    # )
+
+    text_box = ttk.Entry(win, font = ("Times New Roman", 12, "bold"), justify= "center")
+    select_save_path(item=text_box, value=value.strftime("%d/%m/%Y"))
     return text_box
 
 def select_save_path(item: ttk.Entry, value: str = None):

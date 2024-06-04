@@ -5,3 +5,6 @@ administrative records management
 * Alt+Q: close app
 
 ![alt text](Images/demo.png "Demo")
+
+
+pyinstaller --onefile --windowed --icon="Images/icon.ico" --hidden-import tkcalendar .\thuy_thu_ben_luc.py
