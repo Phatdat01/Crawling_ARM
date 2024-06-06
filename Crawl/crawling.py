@@ -16,7 +16,6 @@ from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from Crawl.storing import get_by_latest_file, move_to_des
 
 CONTENT_LIST = ["cn","chuyển nhượng"]
-FILE_LIST = ["giấy chứng nhận","tờ khai lệ phí trước bạ nhà, đất"]
 
 def load_edge(download_path: str):
     prefs = {
@@ -222,23 +221,21 @@ def click_to_save(driver: WebDriver, cre: json, page: int, id: int):
 
     # download basic
     for container in container_element:
-        text = container.find_element(By.CLASS_NAME, value="text-wrap.ng-binding").text
-        for file_name in FILE_LIST:
-            if file_name in text.lower():
-                try:
-                    container.find_element(By.TAG_NAME, value="a").click()
-                    driver.switch_to.window(driver.window_handles[0])
-                    time.sleep(1)
-                except:
-                    pass
+        try:
+            container.find_element(By.TAG_NAME, value="a").click()
+            driver.switch_to.window(driver.window_handles[0])
+            time.sleep(1)
+        except:
+            pass
 
     time.sleep(cre['delay'])
 
-    for i in range(1,3):
+    for i in range(1,len(driver.window_handles)):
         download_file(driver=driver, id=i)
+        time.sleep(1)
         num_file += 1
     time.sleep(1.7)
-    for i in range(2):
+    for i in range(len(driver.window_handles)):
         close_file(driver=driver)
 
     time.sleep(1)
@@ -255,31 +252,30 @@ def click_to_save(driver: WebDriver, cre: json, page: int, id: int):
 
     # download get result
     for row in rows:
-        text = row.find_elements(By.TAG_NAME, value="td")[2].text
-        if "Bến Lức" in text:
-            try:
-                files = row.find_elements(By.CLASS_NAME, value="m-n.pointer.large.red.file.outline.pdf.icon")
-                if files:
-                    for fi in files:
-                        fi.click()
-                        driver.switch_to.window(driver.window_handles[0])
-                        time.sleep(1)
+        try:
+            files = row.find_elements(By.CLASS_NAME, value="m-n.pointer.large.red.file.outline.pdf.icon")
+            if files:
+                for fi in files:
+                    fi.click()
+                    driver.switch_to.window(driver.window_handles[0])
+                    time.sleep(1)
 
-                    time.sleep(cre["delay"])
-                    for i in range(1,len(files)+1):
-                        download_file(driver=driver, id=i)
-                        num_file += 1
+                time.sleep(cre["delay"])
+                for i in range(1,len(files)+1):
+                    download_file(driver=driver, id=i)
+                    time.sleep(1)
+                    num_file += 1
 
-                    time.sleep(1.7)
-                    for i in range(len(files)):
-                        close_file(driver=driver)
-                    
-                    time.sleep(1.7)
-                    if  len(driver.window_handles) >1:
-                        for window_handle in range (1, len(driver.window_handles)):
-                            close_file(driver=driver, id=window_handle)
-            except:
-                pass
+                time.sleep(1.7)
+                for i in range(len(files)):
+                    close_file(driver=driver)
+                
+                time.sleep(1.7)
+                if  len(driver.window_handles) >1:
+                    for window_handle in range (1, len(driver.window_handles)):
+                        close_file(driver=driver, id=window_handle)
+        except:
+            pass
 
     time.sleep(1)
     srcs = get_by_latest_file(num=num_file, download_path=cre["path"])
@@ -299,13 +295,13 @@ def download(driver: WebDriver, cre: json):
     time.sleep(3.7)
     page = cre["page"]
     while True:
-        time.sleep(1.7)
+        time.sleep(2.7)
         end_range, last = check_current_page(driver=driver)
         data = wait_element(driver=driver, timeout= 30, key="danhSachHoSo",by="id")
         row = data.find_elements(By.TAG_NAME, value="tr")
 
         # check each row of page
-        for i in range(4,len(row)):
+        for i in range(1,len(row)):
             txt = row[i].find_elements(By.CLASS_NAME, value= "ng-binding")[5].text
             for content in CONTENT_LIST:
                 if content in txt.lower():
