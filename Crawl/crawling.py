@@ -97,7 +97,7 @@ def check_current_page(driver: WebDriver) -> List[int]:
         end_range: end of range in page
         last: last row of page
     """
-    current = driver.find_element(By.XPATH, value="//*[@ng-if='totalPage > 0']")
+    current = wait_element(driver=driver, timeout=10, key="//*[@ng-if='totalPage > 0']", by="xpath")
     current_range, last= current.find_elements(By.CLASS_NAME, value="ng-binding")
     _, end_range = map(int, current_range.text.split(" - "))
     return [end_range, int(last.text)]
@@ -295,7 +295,6 @@ def download(driver: WebDriver, cre: json):
     time.sleep(3.7)
     page = cre["page"]
     while True:
-        time.sleep(1.7)
         end_range, last = check_current_page(driver=driver)
         data = wait_element(driver=driver, timeout= 30, key="danhSachHoSo",by="id")
         row = data.find_elements(By.TAG_NAME, value="tr")
@@ -330,3 +329,4 @@ def download(driver: WebDriver, cre: json):
             else:
                 page += 1
                 change_page(driver=driver)
+                time.sleep(4)
